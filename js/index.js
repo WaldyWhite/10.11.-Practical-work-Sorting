@@ -190,17 +190,17 @@ const sortAPI = {
 
   },
 
-  quickSort(arr) {
+  quickSort(arr, comparation) {
       if (arr.length <= 1) {
           return arr;
       }
-  
+   
       const temp = arr[arr.length - 1];
       const leftList = [];
       const rightList = [];
   
       for (let i = 0; i < arr.length - 1; i++) {
-          if (arr[i].weight < temp.weight) {
+          if (comparation(temp, arr[i])) {
               leftList.push(arr[i]);
           } 
           else {
@@ -208,15 +208,15 @@ const sortAPI = {
           }
       }
   
-     return [...sortAPI.quickSort(leftList), temp, ...sortAPI.quickSort(rightList)];
+     return [...sortAPI.quickSort(leftList,comparation), temp, ...sortAPI.quickSort(rightList,comparation)];
   },
 
   // выполняет сортировку и производит замер времени
   startSort(sort, arr, comparation) {
-    const start = new Date();
+    const start = new Date().getTime();
     sort(arr, comparation);
-    const end = new Date();
-    sortTime = `${(end.getTime() - start.getTime())} ms`;
+    const end = new Date().getTime();
+    sortTime = `${end - start} ms`;
   },
 
 };
@@ -231,6 +231,7 @@ sortChangeButton.addEventListener('click', () => {
   if ( sortKind == 'bubbleSort') {
     sortChenge = true;
     sortKind = 'quickSort';
+    sortTimeLabel.textContent = sortTime = '-'
       // TODO: вывести в sortTimeLabel значение 'sorting...'
     sortKindLabel.textContent = sortKind;
 
@@ -239,6 +240,7 @@ sortChangeButton.addEventListener('click', () => {
     sortKind = 'bubbleSort';
       // TODO: вывести в sortTimeLabel значение 'sorting...'
     sortKindLabel.textContent = sortKind;
+    sortTimeLabel.textContent = sortTime = '-'
   }
   // TODO: переключать значение sortKind между 'bubbleSort' / 'quickSort'
 });
@@ -247,10 +249,14 @@ sortActionButton.addEventListener('click', () => {
   if ( sortKind === 'quickSort') {
     // производит замер времени вне функции startSort
     const start = new Date();
-    const resullt = sortAPI.quickSort(fruits);
-    fruits = resullt;
+
+    const resullt = sortAPI.quickSort(fruits, comparationColor);
+
     const end = new Date();
     sortTime = `${(end.getTime() - start.getTime())} ms`;
+
+    fruits = resullt;
+
     sortTimeLabel.textContent = sortTime;
       // TODO: вывести в sortTimeLabel значение sortTime
     sortChenge = false;
@@ -258,6 +264,7 @@ sortActionButton.addEventListener('click', () => {
   } else if (sortKind === 'bubbleSort') {
       // производит замер времени в функции startSort
       sortAPI.startSort(sortAPI.bubbleSort, fruits, comparationColor);
+
       // TODO: вывести в sortTimeLabel значение sortTime
       sortTimeLabel.textContent = sortTime;
       sortChenge = true;
